@@ -3,16 +3,19 @@ package br.com.sisnema.financeiroweb.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.NaturalId;
@@ -25,33 +28,33 @@ public class Usuario extends BaseEntity {
 	private static final long serialVersionUID = 8402638884150282595L;
 
 	@Id
-	@Column(name="cod_usuario")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = "cod_usuario")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer codigo;
-	
+
 	private String nome;
-	
+
 	@NaturalId
-	@Column(updatable=false)
+	@Column(updatable = false)
 	private String login;
-	
+
 	private String senha;
-	
+
 	private String celular;
-	
+
 	private String nascimento;
-	
+
 	private String idioma;
-	
+
 	private String email;
-	
+
 	private boolean ativo;
-	
-	@ElementCollection(targetClass = UsuarioPermissao.class)	     
-	@JoinTable( name = "usuario_permissao", 
-			    uniqueConstraints = {@UniqueConstraint(columnNames = {"usuario", "permissao" }) }, 
-			    joinColumns = @JoinColumn(name = "usuario")
-			   )	     
+
+	private byte[] photo;
+
+	@ElementCollection(targetClass = UsuarioPermissao.class)
+	@JoinTable(name = "usuario_permissao", uniqueConstraints = {
+			@UniqueConstraint(columnNames = { "usuario", "permissao" }) }, joinColumns = @JoinColumn(name = "usuario"))
 	@Enumerated(EnumType.STRING)
 	@Column(name = "permissao", length = 50)
 	private Set<UsuarioPermissao> permissao = new HashSet<UsuarioPermissao>();
@@ -134,6 +137,25 @@ public class Usuario extends BaseEntity {
 
 	public void setAtivo(boolean ativo) {
 		this.ativo = ativo;
+	}
+
+	public Set<UsuarioPermissao> getPermissao() {
+		return permissao;
+	}
+
+	public void setPermissao(Set<UsuarioPermissao> permissao) {
+		this.permissao = permissao;
+	}
+	
+	@Lob 							
+	@Basic(fetch=FetchType.LAZY)			
+	@Column(length=16777215)
+	public byte[] getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
 	}
 
 	@Override
@@ -240,13 +262,4 @@ public class Usuario extends BaseEntity {
 				+ celular + ", nascimento=" + nascimento + ", idioma=" + idioma + ", email=" + email + ", ativo="
 				+ ativo + ", permissao=" + permissao + "]";
 	}
-
-	public Set<UsuarioPermissao> getPermissao() {
-		return permissao;
-	}
-
-	public void setPermissao(Set<UsuarioPermissao> permissao) {
-		this.permissao = permissao;
-	}
-
 }

@@ -12,19 +12,19 @@ import br.com.sisnema.financeiroweb.model.Usuario;
 import br.com.sisnema.financeiroweb.util.JPAUtil;
 
 /**
- * Classe abstrata que herdara os comportamentos de {@link IDAO} e conterá atributos 
- * e funcionalidades genéricas a todas as filhas 
+ * Classe abstrata que herdara os comportamentos de {@link IDAO} e conterï¿½ atributos 
+ * e funcionalidades genï¿½ricas a todas as filhas 
  */
 public abstract class DAO<T> implements IDAO<T> {
 
 	/**
-	 * Como todas as DAOS irão possuir uma sessao, criaremos a mesma
+	 * Como todas as DAOS irï¿½o possuir uma sessao, criaremos a mesma
 	 * na classe pai, sendo ela HERDADA pelas filhas....
 	 */
-    protected final EntityManager em;
+    protected EntityManager em;
 	
 	/**
-	 * Método construtor de DAO para INICIALIZAR a sessao
+	 * Mï¿½todo construtor de DAO para INICIALIZAR a sessao
 	 * do hibernate
 	 */
 	public DAO() {
@@ -41,8 +41,8 @@ public abstract class DAO<T> implements IDAO<T> {
 			rollback();
 			beginTransaction();
 			
-			throw new LockException("Este registro acaba de ser atualizado por outro usuário. "
-					+ "Refaça a pesquisa", ole);
+			throw new LockException("Este registro acaba de ser atualizado por outro usuï¿½rio. "
+					+ "Refaï¿½a a pesquisa", ole);
 		} catch (Exception e) {
 			throw new DAOException(e);
 		}
@@ -57,6 +57,9 @@ public abstract class DAO<T> implements IDAO<T> {
 	}
 	
     protected final Session getSession() {
+    	if(!em.isOpen()){
+    		em = JPAUtil.getEntityManager();
+    		    	}
     	return (Session) em.unwrap(Session.class);
     }
     

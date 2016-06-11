@@ -1,6 +1,7 @@
 package br.com.sisnema.financeiroweb.action;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -15,54 +16,69 @@ import br.com.sisnema.financeiroweb.model.Usuario;
 import br.com.sisnema.financeiroweb.negocio.ContaRN;
 
 /**
- * Objetivo desta classe é conter os dados do usuario logado
- * armazendo em um único objeto tudo que possa ser necessario,
- * o qual estará em escopo de sessão.
+ * Objetivo desta classe ï¿½ conter os dados do usuario logado armazendo em um
+ * ï¿½nico objeto tudo que possa ser necessario, o qual estarï¿½ em escopo de
+ * sessï¿½o.
  */
 @ManagedBean
 @SessionScoped
 public class ContextoBean implements Serializable {
 
 	private static final long serialVersionUID = 1685484721761615411L;
-	
-	/** Contem a instancia do usuario logado  */
+
+	private List<String> landscapes;
+
+	/** Contem a instancia do usuario logado */
 	private Usuario usuarioLogado = null;
-	
+
 	private Conta contaAtiva;
-	
+
+	public ContextoBean() {
+		landscapes = new ArrayList<String>();
+		landscapes.add("n1.jpg");
+		landscapes.add("n2.jpg");
+		landscapes.add("n3.jpg");
+		landscapes.add("n4.jpg");
+		landscapes.add("n5.jpg");
+		landscapes.add("n6.jpg");
+		landscapes.add("n7.jpg");
+		landscapes.add("n8.jpg");
+	}
+
 	public Usuario getUsuarioLogado() {
-		HttpSession session = (HttpSession) FacesContext.getCurrentInstance()
-														.getExternalContext()
-														.getSession(false);
-		
+		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+
 		usuarioLogado = (Usuario) session.getAttribute(LoginBean.USUARIO_LOGADO);
 		return usuarioLogado;
 	}
-	
-	
+
 	/**
-	 * Método que recebe uma determinada permissão e verifica se o usuário a possui
-	 * @param role - permissão a ser verificada
-	 * @return valor boleano informando se usuário possui a permissão parametrizada
+	 * Mï¿½todo que recebe uma determinada permissï¿½o e verifica se o usuï¿½rio a
+	 * possui
+	 * 
+	 * @param role
+	 *            - permissï¿½o a ser verificada
+	 * @return valor boleano informando se usuï¿½rio possui a permissï¿½o
+	 *         parametrizada
 	 */
-	public boolean hasRole(String role){
+	public boolean hasRole(String role) {
 		Usuario user = getUsuarioLogado();
 		return user != null && user.getPermissao().contains(UsuarioPermissao.valueOf(role));
 	}
 
-	public boolean hasRole(Usuario us, String role){
+	public boolean hasRole(Usuario us, String role) {
 		return us.getPermissao().contains(UsuarioPermissao.valueOf(role));
 	}
-	
+
 	public Conta getContaAtiva() {
 		// primeiro acesso a conta esta nula
 		if (contaAtiva == null) {
 			Usuario usuario = getUsuarioLogado();
 
-			if(usuario == null){
+			if (usuario == null) {
 				return null;
 			}
-			
+
 			ContaRN contaRN = new ContaRN();
 			contaAtiva = contaRN.buscarFavorita(usuario);
 
@@ -71,7 +87,7 @@ public class ContextoBean implements Serializable {
 				// busca todas as contas do usuario
 				List<Conta> contas = contaRN.pesquisar(new Conta(usuario));
 				if (contas != null) {
-					
+
 					// sai do loop apos encontrar primeira conta
 					for (Conta conta : contas) {
 						contaAtiva = conta;
@@ -84,28 +100,19 @@ public class ContextoBean implements Serializable {
 	}
 
 	/**
-	 * Mais a frente teremos o programa lancamento
-	 * que ira fazer um lancamento em uma CONTA_ATIVA
-	 * logo toda a vez que alteramos uma conta na combo
+	 * Mais a frente teremos o programa lancamento que ira fazer um lancamento
+	 * em uma CONTA_ATIVA logo toda a vez que alteramos uma conta na combo
 	 * devemos alterar-la na sessao.
 	 */
 	public void setContaAtiva(ValueChangeEvent event) {
 		Integer codigo = (Integer) event.getNewValue();
 		ContaRN contaRN = new ContaRN();
-		
+
 		contaAtiva = contaRN.obterPorId(new Conta(codigo));
 	}
+
+	public List<String> getLandscapes() {
+		return landscapes;
+	}
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
